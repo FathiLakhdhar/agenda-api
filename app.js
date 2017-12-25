@@ -10,6 +10,7 @@ mongoose.Promise = global.Promise;
 var index = require('./routes/index');
 var auth = require('./routes/auth');
 var users = require('./routes/users');
+var agendas = require('./routes/agendas');
 
 var app = express();
 
@@ -53,6 +54,7 @@ app.use(function (req, res, next) {
 app.use('/', index);
 app.use('/api/auth', auth);
 app.use('/api/users', users);
+app.use('/api/agendas', agendas);
 
 
 
