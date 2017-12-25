@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const agendaSchema = new Schema({
   name: {
     type: String,
-    unique: true
+    unique: true,
+    set: (v)=> v.trim()
   },
   start: {
     type: String,
@@ -45,7 +46,7 @@ const agendaSchema = new Schema({
     type: String,
     required: [true, 'link is required'],
     set: function(val){
-      return val.replace(/ /g,"-");
+      return val.trim().replace(/ /g,"-");
     }
   },
   active: {
@@ -57,7 +58,7 @@ const agendaSchema = new Schema({
 agendaSchema.pre('validate', function(next) {
   console.log('middleware pre validate');
   if (typeof this.link !== 'string') this.link = '';
-  if(this.link.length == 0) this.link = this.name.replace(/ /g,"-");
+  if(this.link.length == 0) this.link = this.name.trim().replace(/ /g,"-");
   next();
 });
 
