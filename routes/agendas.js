@@ -14,7 +14,8 @@ router.get('/', function(req, res, next) {
       start,
       end,
       duration,
-      startEvery
+      startEvery,
+      link
     } = req.body;
     var agenda = new Agenda({
       name,
@@ -22,6 +23,7 @@ router.get('/', function(req, res, next) {
       end,
       duration,
       startEvery,
+      link,
     });
 
     agenda.save(function(err, agenda) {

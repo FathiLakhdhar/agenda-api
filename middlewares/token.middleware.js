@@ -2,9 +2,10 @@ const jwt = require('jsonwebtoken');
 const privateKey = require('../private.key');
 
 function tokenMiddleware(req, res, next){
-  const token = req.headers['authorization'];
+  var token = req.headers['authorization'];
   console.log('token : ',token);
   if (token) {
+    token= token.split(" ")[1];
     jwt.verify(token, privateKey, function(err, decode) {
       if(err){
         console.log(err);

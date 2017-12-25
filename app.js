@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var assert = require('assert');
+var mongoose= require('mongoose');
 
 var index = require('./routes/index');
 var auth = require('./routes/auth');
@@ -39,13 +40,14 @@ app.use(crossMiddleware);
 var url = 'mongodb://localhost:27017/calendly';
 app.use(databaseMiddleware(url));
 
-// middleware token authorization
-app.use(tokenMiddleware);
-
 
 // Routes
 app.use('/', index);
 app.use('/api/auth', auth);
+
+// middleware token authorization
+app.use(tokenMiddleware);
+
 app.use('/api/users', users);
 app.use('/api/agendas', agendas);
 
@@ -60,10 +62,6 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  //res.locals.message = err.message;
-  //res.locals.error = req.app.get('env') === 'development' ? err : {};
-
   console.log(err);
 
   // render the error page
