@@ -5,12 +5,17 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var assert = require('assert');
-var mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
+
 var index = require('./routes/index');
 var auth = require('./routes/auth');
 var users = require('./routes/users');
 var agendas = require('./routes/agendas');
+
+var crossMiddleware = require('./middlewares/cross.middleware');
+var tokenMiddleware = require('./middlewares/token.middleware');
+var databaseMiddleware = require('./middlewares/database.middleware');
+
+mongoose.Promise = global.Promise;
 
 var app = express();
 
@@ -29,25 +34,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // middleware cross
-app.use(function(req, res, next){
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+app.use(crossMiddleware);
+// middleware connect database
+var url = 'mongodb://localhost:27017/calendly';
+app.use(databaseMiddleware(url));
 
-
-app.use(function (req, res, next) {
-  // Connection URL
-  var url = 'mongodb://localhost:27017/calendly';
-
-  mongoose.connect(url,{useMongoClient : true}, function(err, database){
-    assert.equal(null, err);
-    console.log('Connected successfully to server mongodb');
-    next();
-  });
-
-});
-
+// middleware token authorization
+app.use(tokenMiddleware);
 
 
 // Routes
