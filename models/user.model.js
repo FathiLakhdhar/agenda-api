@@ -37,7 +37,7 @@ const userSchema = new Schema({
     required: [true],
     default: Date.now
   },
-  agendas: [agendaSchema]
+  agendas: [{type: Schema.Types.ObjectId, ref: 'Agenda'}]
 });
 
 /*

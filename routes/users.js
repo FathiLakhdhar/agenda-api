@@ -7,7 +7,7 @@ var User = require('../models/user.model');
 router.get('/', function(req, res, next) {
   const dataToken = req.dataToken;
 
-  User.find({}, function(err, users) {
+  User.find({}, 'firstname surname email age gender agendas', function(err, users) {
     if (err) return next(err);
     return res.json(users);
   });
@@ -25,7 +25,9 @@ router.get('/:id', function(req, res, next) {
 
   User.findOne({
     _id: id
-  }, function(err, user) {
+  },
+  'firstname surname email age gender agendas',
+  function(err, user) {
     if (err) {
       console.log(err.message);
       res.json({

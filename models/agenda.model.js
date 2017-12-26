@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 const intervalSchema = require('./interval.model').schema;
 
 const agendaSchema = new Schema({
+  author: {
+    type: Schema.Types.ObjectId,
+    rel: 'User'
+  },
   name: {
     type: String,
     unique: true,

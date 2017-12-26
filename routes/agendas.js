@@ -8,22 +8,34 @@ router.get('/', function(req, res, next) {
       email
     } = req.dataToken;
 
-    const {id} = req.query;
+    const {
+      id
+    } = req.query;
+
 
     User.findOne({
       email: email
     }, function(err, user) {
       if (err) return next(err);
-      if (user){
-        if(id) return res.status(200).json(user.agendas.id(id));
-        //if id null
-        return res.status(200).json(user.agendas);
-      }
-      else return res.status(401).json({
+      if (user) {
+
+        var selector = {
+          author: user.id
+        };
+        if (id) selector._id = id;
+        Agenda.find(selector,
+          function(err, agendas) {
+            if (err) return next(err);
+            console.log(agendas)
+            return res.status(200).json(agendas);
+          });
+
+      } else return res.status(401).json({
         success: false,
         message: 'user invalid',
       });
     });
+
   })
   .post('/', function(req, res, next) {
     const {
@@ -44,8 +56,13 @@ router.get('/', function(req, res, next) {
       email: email
     }, function(err, user) {
       if (err) return next(err);
+      if (!user) return res.status(401).json({
+        success: false,
+        message: 'user invalid',
+      });
 
       var agenda = new Agenda({
+        author: user._id,
         name,
         start,
         end,
@@ -55,22 +72,18 @@ router.get('/', function(req, res, next) {
         availability,
       });
 
-      user.agendas.push(agenda)
-
-      user.save(function(err, user) {
+      agenda.save(function(err, agenda) {
         if (err) return next(err);
-        if (user) {
-          console.log(user)
+        console.log(agenda);
+        user.agendas.push(agenda._id);
+        user.save(function(err, user){
+          if(err) return next(err);
           return res.status(200).json({
             success: true,
             message: 'Success add agenda to current user',
             _id: agenda._id
           });
-        } else return res.status(401).json({
-          success: false,
-          message: 'user invalid',
         });
-
       })
 
     });
@@ -90,26 +103,34 @@ router.get('/', function(req, res, next) {
       email
     }, function(err, user) {
       if (err) return next(err);
+
       if (user) {
-        var agenda = user.agendas.id(id);
-        if (agenda) {
-          Object.assign(agenda, data);
-          user.save(function(err, user) {
-            if (err) return next(err);
-            return res.status(200).json({
-              success: true,
-              message: "success update"
+        Agenda.findOne({
+          _id: id
+        }, function(err, agenda) {
+          if (err) return next(err);
+          if (agenda) {
+            Object.assign(agenda, data);
+
+            agenda.save(function(err, updatedAgenda) {
+              if (err) return next(err);
+              return res.status(200).json({
+                success: true,
+                message: "success update"
+              });
             });
+
+          } else return res.status(200).json({
+            success: false,
+            message: "agenda not found"
           });
-        }
-        else return res.status(200).json({
-          success: false,
-          message: "id agenda incorrect"
-        });
+
+        })
+
 
       } else return res.status(401).json({
         success: false,
-        message: 'user invalid',
+        message: 'user not found',
       });
 
     });
@@ -130,21 +151,20 @@ router.get('/', function(req, res, next) {
     }, function(err, user) {
       if (err) return next(err);
       if (user) {
-        var agenda = user.agendas.id(id);
-        if (agenda) {
-          agenda.remove();
-          user.save(function(err, user) {
-            if (err) return next(err);
+        user.agendas.remove(id);
+        Agenda.remove({
+          _id: id,
+          author: user._id
+        }, function(err) {
+          if (err) return next(err);
+          user.save(function(err, user){
+            if(err) return next(err);
             return res.status(200).json({
               success: true,
               message: "success delete"
             });
-          });
-        }
-        else return res.status(200).json({
-          success: false,
-          message: "id agenda incorrect"
-        });
+          })
+        })
 
       } else return res.status(401).json({
         success: false,
