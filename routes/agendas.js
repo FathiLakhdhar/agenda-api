@@ -12,7 +12,11 @@ router.get('/', function(req, res, next) {
       email: email
     }, function(err, user) {
       if (err) return next(err);
-      res.status(200).json(user.agendas);
+      if (user) res.status(200).json(user.agendas);
+      else return res.status(401).json({
+        success: false,
+        message: 'user invalid',
+      });
     });
   })
   .post('/', function(req, res, next) {
@@ -49,16 +53,61 @@ router.get('/', function(req, res, next) {
 
       user.save(function(err, user) {
         if (err) return next(err);
-        console.log(user)
-        return res.status(200).json({
-          success: true,
-          message: 'Success add agenda to current user',
+        if (user) {
+          console.log(user)
+          return res.status(200).json({
+            success: true,
+            message: 'Success add agenda to current user',
+          });
+        } else return res.status(401).json({
+          success: false,
+          message: 'user invalid',
         });
+
       })
 
     });
 
-  })
+  }) // end POST
+  .put('/:id', function(req, res, next) {
+    const {
+      id
+    } = req.params;
+    const data = req.body;
+
+    const {
+      email
+    } = req.dataToken;
+
+    User.findOne({
+      email
+    }, function(err, user) {
+      if (err) return next(err);
+      if (user) {
+        var agenda = user.agendas.id(id);
+        if (agenda) {
+          Object.assign(agenda, data);
+          user.save(function(err, user) {
+            if (err) return next(err);
+            return res.status(200).json({
+              success: true,
+              message: "success update"
+            });
+          });
+        }
+        else return res.status(200).json({
+          success: false,
+          message: "id agenda incorrect"
+        });
+
+      } else return res.status(401).json({
+        success: false,
+        message: 'user invalid',
+      });
+
+    });
+
+  }) // end PUT
 
 
 module.exports = router;
