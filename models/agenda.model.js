@@ -6,7 +6,7 @@ const agendaSchema = new Schema({
   name: {
     type: String,
     unique: true,
-    set: (v) => v.trim()
+    trim: true
   },
   start: {
     type: String,
