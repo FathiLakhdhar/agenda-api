@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 //const md5 = require('md5');
+const agendaSchema = require('./agenda.model').schema;
 
 
 const userSchema = new Schema({
@@ -36,6 +37,7 @@ const userSchema = new Schema({
     required: [true],
     default: Date.now
   },
+  agendas: [agendaSchema]
 });
 
 /*
