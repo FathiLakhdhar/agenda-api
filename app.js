@@ -11,6 +11,7 @@ var index = require('./routes/index');
 var auth = require('./routes/auth');
 var users = require('./routes/users');
 var agendas = require('./routes/agendas');
+var reserve = require('./routes/reserve');
 
 var crossMiddleware = require('./middlewares/cross.middleware');
 var tokenMiddleware = require('./middlewares/token.middleware');
@@ -50,6 +51,7 @@ app.use(tokenMiddleware);
 
 app.use('/api/users', users);
 app.use('/api/agendas', agendas);
+app.use('/api/reserve', reserve);
 
 
 
@@ -68,7 +70,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   //res.render('error');
   res.json({
-    errors : err,
+    errors : err.errors,
     'message': err.message
   });
 });
