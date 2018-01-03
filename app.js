@@ -11,7 +11,9 @@ var index = require('./routes/index');
 var auth = require('./routes/auth');
 var users = require('./routes/users');
 var agendas = require('./routes/agendas');
+var agendaPublic = require('./routes/agendas.public');
 var reserve = require('./routes/reserve');
+var reservePublic = require('./routes/reserve.public');
 
 var crossMiddleware = require('./middlewares/cross.middleware');
 var tokenMiddleware = require('./middlewares/token.middleware');
@@ -45,6 +47,8 @@ app.use(databaseMiddleware(url));
 // Routes
 app.use('/', index);
 app.use('/api/auth', auth);
+app.use('/api/agendas', agendaPublic);
+app.use('/api/reserve', reservePublic);
 
 // middleware token authorization
 app.use(tokenMiddleware);
