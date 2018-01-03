@@ -1,8 +1,6 @@
 const router = require('express').Router();
-const ObjectId = require('mongoose').Types.ObjectId;
 var Agenda = require('../models/agenda.model');
 var Reserve = require('../models/reserve.model');
-var User = require('../models/user.model');
 
 router.post('/:id_agenda', function(req, res, next) {
     const {
