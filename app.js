@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var assert = require('assert');
 var mongoose= require('mongoose');
+var cors = require('cors');
 
 var index = require('./routes/index');
 var auth = require('./routes/auth');
@@ -15,7 +16,6 @@ var agendaPublic = require('./routes/agendas.public');
 var reserve = require('./routes/reserve');
 var reservePublic = require('./routes/reserve.public');
 
-var crossMiddleware = require('./middlewares/cross.middleware');
 var tokenMiddleware = require('./middlewares/token.middleware');
 var databaseMiddleware = require('./middlewares/database.middleware');
 
@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // middleware cross
-app.use(crossMiddleware);
+app.use(cors());
 // middleware connect database
 var url = 'mongodb://localhost:27017/calendly';
 app.use(databaseMiddleware(url));
