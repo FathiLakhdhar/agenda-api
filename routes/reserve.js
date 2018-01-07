@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const ObjectId = require('mongoose').Types.ObjectId;
+const mailer = require('../services/mailer.service');
 var Agenda = require('../models/agenda.model');
 var Reserve = require('../models/reserve.model');
 var User = require('../models/user.model');
@@ -91,9 +92,9 @@ router.get('', function(req, res, next) {
       email
     } = req.dataToken;
 
-    Reserve.findOne({
-      _id: id
-    }, function(err, reservation) {
+    Reserve.findOne({_id: id})
+    .populate('agenda', ['_id', 'name'], Agenda)
+    .exec(function(err, reservation) {
       if (err) return next(err);
       if (reservation) {
         User.findOne({
@@ -101,13 +102,21 @@ router.get('', function(req, res, next) {
         }, function(err, currentUser) {
           if (err) return next(err);
           if (currentUser) {
-            if (currentUser.agendas.indexOf(reservation.agenda) >= 0) {
+            if (currentUser.agendas.indexOf(reservation.agenda._id) >= 0) {
               const {
                 state
               } = req.body;
               reservation.state = state;
               reservation.save(function(err, updatedReservation) {
                 if (err) return next(err);
+                let mailOptions = {
+                  from: email, // sender address
+                  to: reservation.email, // list of receivers
+                  subject: `Reservation agenda ${reservation.agenda.name}`, // Subject line
+                  text: 'Hello '+reservation.fullname, // plain text body
+                  html: `<b>${reservation.agenda.name} state : <em>${reservation.state}</em></b>` // html body
+                };
+                mailer(mailOptions);
                 return res.status(200).json({
                   success: true,
                   message: "success update state reservation"
