@@ -27,7 +27,14 @@ router.get('/', function(req, res, next) {
           function(err, agendas) {
             if (err) return next(err);
             console.log(agendas)
-            return res.status(200).json(agendas);
+            if(id){
+              return res.status(200).json(
+                agendas[0]?agendas[0]: null
+              );
+            }else{
+              return res.status(200).json(agendas);
+            }
+
           });
 
       } else return res.status(401).json({
