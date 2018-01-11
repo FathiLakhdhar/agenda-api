@@ -41,7 +41,7 @@ router.get('', function(req, res, next) {
   }) //ennd get
 
   // post
-  .post('', function(req, res, next) {
+/*  .post('', function(req, res, next) {
     const {
       id_agenda,
       date,
@@ -83,7 +83,7 @@ router.get('', function(req, res, next) {
       })
 
   })
-
+*/
   .put('/:id', function(req, res, next) {
     const {
       id
